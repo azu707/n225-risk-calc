@@ -33,7 +33,7 @@ class RiskCalculator:
                 OrderEntry(
                     price=order_range.start_price,
                     amount=order_range.order_amount,
-                    margin=order_range.order_amount  # 証拠金は発注額と同額
+                    margin=order_range.start_price  # 証拠金は注文価格と同額
                 )
             ]
         else:
@@ -52,7 +52,7 @@ class RiskCalculator:
                     OrderEntry(
                         price=order_price,
                         amount=order_range.order_amount,
-                        margin=order_range.order_amount  # 証拠金は発注額と同額
+                        margin=order_price  # 証拠金は注文価格と同額
                     )
                 )
         
