@@ -52,7 +52,8 @@ class ResultFormatter:
         return (f"注文{index:2d}: "
                 f"価格 {self.currency_formatter.format_yen(entry.price)}, "
                 f"金額 {self.currency_formatter.format_yen(entry.amount)}, "
-                f"証拠金 {self.currency_formatter.format_yen(entry.margin)}")
+                f"数量 {entry.quantity}, "
+                f"証拠金 {self.currency_formatter.format_yen(int(entry.margin))}")
     
     def format_summary(self, analysis: RiskAnalysis) -> str:
         """
@@ -68,7 +69,7 @@ class ResultFormatter:
             "=== リスク分析サマリー ===",
             f"総注文数: {self.currency_formatter.format_number(analysis.total_orders)}件",
             f"総発注金額: {self.currency_formatter.format_yen(analysis.total_amount)}",
-            f"総証拠金: {self.currency_formatter.format_yen(analysis.total_margin)}",
+            f"総証拠金: {self.currency_formatter.format_yen(int(analysis.total_margin))}",
             f"平均注文価格: {self.currency_formatter.format_yen(int(analysis.average_price))}",
             f"価格レンジ: {self.currency_formatter.format_yen(analysis.price_range)}",
         ]
@@ -117,7 +118,7 @@ class ResultFormatter:
         Returns:
             List[str]: テーブルヘッダーのリスト
         """
-        return ["注文番号", "注文価格", "発注金額", "必要証拠金"]
+        return ["注文番号", "注文価格", "発注金額", "取引数量", "必要証拠金"]
     
     def format_table_row(self, entry: OrderEntry, index: int) -> List[str]:
         """
@@ -134,5 +135,6 @@ class ResultFormatter:
             str(index),
             self.currency_formatter.format_yen(entry.price),
             self.currency_formatter.format_yen(entry.amount),
-            self.currency_formatter.format_yen(entry.margin)
+            str(entry.quantity),
+            self.currency_formatter.format_yen(int(entry.margin))
         ]

@@ -9,6 +9,8 @@ class InputValidator:
     MAX_PRICE = 100000     # 最大価格（円）
     MIN_ORDER_AMOUNT = 100  # 最小注文金額（円）
     MAX_ORDER_AMOUNT = 50000  # 最大注文金額（円）
+    MIN_QUANTITY = 0.1     # 最小取引数量
+    MAX_QUANTITY = 100.0   # 最大取引数量
     
     @staticmethod
     def validate_price_range(start_price: int, end_price: int) -> Tuple[bool, Optional[str]]:
@@ -63,7 +65,30 @@ class InputValidator:
         return True, None
     
     @staticmethod
-    def validate_all_inputs(start_price: int, end_price: int, order_amount: int) -> Tuple[bool, Optional[str]]:
+    def validate_quantity(quantity: float) -> Tuple[bool, Optional[str]]:
+        """
+        取引数量のバリデーション
+        
+        Args:
+            quantity: 取引数量
+            
+        Returns:
+            Tuple[bool, Optional[str]]: (有効性, エラーメッセージ)
+        """
+        if quantity < InputValidator.MIN_QUANTITY:
+            return False, f"取引数量は{InputValidator.MIN_QUANTITY}以上である必要があります"
+        
+        if quantity > InputValidator.MAX_QUANTITY:
+            return False, f"取引数量は{InputValidator.MAX_QUANTITY}以下である必要があります"
+        
+        # 小数点第1位までの値かチェック
+        if round(quantity * 10) != quantity * 10:
+            return False, "取引数量は小数点第1位までの値で入力してください"
+        
+        return True, None
+    
+    @staticmethod
+    def validate_all_inputs(start_price: int, end_price: int, order_amount: int, quantity: float = 0.1) -> Tuple[bool, Optional[str]]:
         """
         全ての入力値を一括でバリデーション
         
@@ -71,6 +96,7 @@ class InputValidator:
             start_price: 開始価格
             end_price: 終了価格
             order_amount: 値幅
+            quantity: 取引数量
             
         Returns:
             Tuple[bool, Optional[str]]: (有効性, エラーメッセージ)
@@ -85,6 +111,11 @@ class InputValidator:
         if not is_valid:
             return is_valid, error_msg
         
+        # 取引数量のバリデーション
+        is_valid, error_msg = InputValidator.validate_quantity(quantity)
+        if not is_valid:
+            return is_valid, error_msg
+        
         # 追加のロジックチェック
         price_range = end_price - start_price
         if order_amount > price_range:
@@ -96,6 +127,23 @@ class InputValidator:
             return False, "注文数が多すぎます。値幅を大きくするか、価格レンジを小さくしてください"
         
         return True, None
+    
+    @staticmethod
+    def parse_quantity_input(quantity_str: str) -> Tuple[bool, Optional[float], Optional[str]]:
+        """
+        取引数量入力文字列をパースして浮動小数点数に変換
+        
+        Args:
+            quantity_str: 取引数量の文字列
+            
+        Returns:
+            Tuple[bool, Optional[float], Optional[str]]: (成功, 数量値, エラーメッセージ)
+        """
+        try:
+            quantity_value = float(quantity_str.strip())
+            return True, quantity_value, None
+        except ValueError:
+            return False, None, "有効な数値を入力してください"
     
     @staticmethod
     def parse_price_input(price_str: str) -> Tuple[bool, Optional[int], Optional[str]]:

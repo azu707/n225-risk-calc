@@ -80,17 +80,25 @@ class MainWindow(QMainWindow):
         self.order_amount_edit.setFont(font)
         layout.addWidget(self.order_amount_edit, 2, 1)
         
+        # 取引数量入力
+        layout.addWidget(QLabel("取引数量:"), 3, 0)
+        self.quantity_edit = QLineEdit()
+        self.quantity_edit.setPlaceholderText("例: 0.1")
+        self.quantity_edit.setText("0.1")  # デフォルト値
+        self.quantity_edit.setFont(font)
+        layout.addWidget(self.quantity_edit, 3, 1)
+        
         # 計算ボタン
         self.calculate_button = QPushButton("計算実行")
         self.calculate_button.setFont(font)
         self.calculate_button.clicked.connect(self.calculate_risk)
-        layout.addWidget(self.calculate_button, 3, 0, 1, 2)
+        layout.addWidget(self.calculate_button, 4, 0, 1, 2)
         
         # クリアボタン
         self.clear_button = QPushButton("クリア")
         self.clear_button.setFont(font)
         self.clear_button.clicked.connect(self.clear_inputs)
-        layout.addWidget(self.clear_button, 4, 0, 1, 2)
+        layout.addWidget(self.clear_button, 5, 0, 1, 2)
         
         return group_box
     
@@ -132,7 +140,8 @@ class MainWindow(QMainWindow):
         self.order_table.setColumnWidth(0, 80)   # 注文番号
         self.order_table.setColumnWidth(1, 120)  # 注文価格
         self.order_table.setColumnWidth(2, 120)  # 発注金額
-        self.order_table.setColumnWidth(3, 120)  # 必要証拠金
+        self.order_table.setColumnWidth(3, 80)   # 取引数量
+        self.order_table.setColumnWidth(4, 120)  # 必要証拠金
         
     def calculate_risk(self):
         """リスク計算の実行"""
@@ -141,8 +150,9 @@ class MainWindow(QMainWindow):
             start_price_text = self.start_price_edit.text().strip()
             end_price_text = self.end_price_edit.text().strip()
             order_amount_text = self.order_amount_edit.text().strip()
+            quantity_text = self.quantity_edit.text().strip()
             
-            if not all([start_price_text, end_price_text, order_amount_text]):
+            if not all([start_price_text, end_price_text, order_amount_text, quantity_text]):
                 self.show_error("全ての項目を入力してください。")
                 return
             
@@ -162,9 +172,14 @@ class MainWindow(QMainWindow):
                 self.show_error(f"値幅の入力エラー: {error}")
                 return
             
+            success, quantity, error = self.validator.parse_quantity_input(quantity_text)
+            if not success:
+                self.show_error(f"取引数量の入力エラー: {error}")
+                return
+            
             # 入力値のバリデーション
             is_valid, error_msg = self.validator.validate_all_inputs(
-                start_price, end_price, order_amount
+                start_price, end_price, order_amount, quantity
             )
             if not is_valid:
                 self.show_error(error_msg)
@@ -174,7 +189,8 @@ class MainWindow(QMainWindow):
             order_range = OrderRange(
                 start_price=start_price,
                 end_price=end_price,
-                order_amount=order_amount
+                order_amount=order_amount,
+                quantity=quantity
             )
             
             analysis = self.calculator.calculate_orders(order_range)
@@ -202,7 +218,7 @@ class MainWindow(QMainWindow):
             row_data = self.formatter.format_table_row(entry, i + 1)
             for j, data in enumerate(row_data):
                 item = QTableWidgetItem(data)
-                # 数値列は右揃え
+                # 数値列は右揃え（注文番号以外）
                 if j > 0:
                     item.setTextAlignment(Qt.AlignRight | Qt.AlignVCenter)
                 self.order_table.setItem(i, j, item)
@@ -212,6 +228,7 @@ class MainWindow(QMainWindow):
         self.start_price_edit.clear()
         self.end_price_edit.clear()
         self.order_amount_edit.clear()
+        self.quantity_edit.setText("0.1")  # デフォルト値にリセット
         self.summary_text.clear()
         self.order_table.setRowCount(0)
     

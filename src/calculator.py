@@ -24,6 +24,9 @@ class RiskCalculator:
         if order_range.order_amount <= 0:
             raise ValueError("値幅は正の値である必要があります")
         
+        if order_range.quantity < 0.1:
+            raise ValueError("取引数量は0.1以上である必要があります")
+        
         # 価格レンジを計算
         price_range = order_range.end_price - order_range.start_price
         
@@ -33,7 +36,8 @@ class RiskCalculator:
                 OrderEntry(
                     price=order_range.start_price,
                     amount=order_range.order_amount,
-                    margin=order_range.start_price  # 証拠金は注文価格と同額
+                    quantity=order_range.quantity,
+                    margin=order_range.start_price * order_range.quantity  # 証拠金は注文価格×取引数量
                 )
             ]
         else:
@@ -52,7 +56,8 @@ class RiskCalculator:
                     OrderEntry(
                         price=order_price,
                         amount=order_range.order_amount,
-                        margin=order_price  # 証拠金は注文価格と同額
+                        quantity=order_range.quantity,
+                        margin=order_price * order_range.quantity  # 証拠金は注文価格×取引数量
                     )
                 )
         

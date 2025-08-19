@@ -15,9 +15,14 @@
 2. **値幅**
    - 各注文間の値幅（円）
 
-3. **証拠金計算**
-   - 証拠金 = 注文価格と同額
-   - 例: 40,000円での注文 → 証拠金 40,000円
+3. **取引数量**
+   - 各取引の数量（最小単位: 0.1）
+   - デフォルト値: 0.1
+   - 0.1以上の値を設定可能
+
+4. **証拠金計算**
+   - 証拠金 = 注文価格 × 取引数量
+   - 例: 40,000円での注文、取引数量0.1 → 証拠金 4,000円
 
 ### 出力機能
 1. **注文一覧表**
@@ -36,7 +41,7 @@
 
 2. **リスク計算**
    - 総発注金額 = 注文数 × 値幅
-   - 総証拠金 = 各注文価格の合計（注文価格と同額のため）
+   - 総証拠金 = 各注文価格の合計 × 取引数量
    - 最大損失想定
    - レンジ外リスク分析
 
@@ -114,18 +119,20 @@ class OrderRange:
     start_price: int     # 開始価格
     end_price: int       # 終了価格
     order_amount: int    # 値幅
+    quantity: float      # 取引数量
     
 @dataclass
 class OrderEntry:
     price: int           # 注文価格
     amount: int          # 発注金額
-    margin: int          # 必要証拠金
+    quantity: float      # 取引数量
+    margin: float        # 必要証拠金
     
 @dataclass
 class RiskAnalysis:
     total_orders: int    # 総注文数
     total_amount: int    # 総発注金額
-    total_margin: int    # 総証拠金
+    total_margin: float  # 総証拠金
     order_list: List[OrderEntry]
 ```
 

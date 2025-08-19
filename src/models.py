@@ -8,6 +8,7 @@ class OrderRange:
     start_price: int     # 開始価格（円）
     end_price: int       # 終了価格（円）
     order_amount: int    # 値幅（円）
+    quantity: float = 0.1  # 取引数量（デフォルト: 0.1）
 
 
 @dataclass
@@ -15,7 +16,8 @@ class OrderEntry:
     """個別注文エントリーを表すデータクラス"""
     price: int           # 注文価格（円）
     amount: int          # 発注金額（円）
-    margin: int          # 必要証拠金（円）
+    quantity: float      # 取引数量
+    margin: float        # 必要証拠金（円）
 
 
 @dataclass
@@ -23,7 +25,7 @@ class RiskAnalysis:
     """リスク分析結果を表すデータクラス"""
     total_orders: int                # 総注文数
     total_amount: int               # 総発注金額（円）
-    total_margin: int               # 総証拠金（円）
+    total_margin: float             # 総証拠金（円）
     order_list: List[OrderEntry]    # 注文一覧
     
     @property
