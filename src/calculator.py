@@ -27,6 +27,9 @@ class RiskCalculator:
         if order_range.quantity < 0.1:
             raise ValueError("取引数量は0.1以上である必要があります")
         
+        if order_range.current_price <= 0:
+            raise ValueError("現在値は正の値である必要があります")
+        
         # 価格レンジを計算
         price_range = order_range.end_price - order_range.start_price
         
@@ -37,7 +40,8 @@ class RiskCalculator:
                     price=order_range.start_price,
                     amount=order_range.order_amount,
                     quantity=order_range.quantity,
-                    margin=order_range.start_price * order_range.quantity  # 証拠金は注文価格×取引数量
+                    margin=order_range.start_price * order_range.quantity,  # 証拠金は注文価格×取引数量
+                    profit_loss=(order_range.current_price - order_range.start_price) * order_range.quantity  # 損益計算
                 )
             ]
         else:
@@ -57,7 +61,8 @@ class RiskCalculator:
                         price=order_price,
                         amount=order_range.order_amount,
                         quantity=order_range.quantity,
-                        margin=order_price * order_range.quantity  # 証拠金は注文価格×取引数量
+                        margin=order_price * order_range.quantity,  # 証拠金は注文価格×取引数量
+                        profit_loss=(order_range.current_price - order_price) * order_range.quantity  # 損益計算
                     )
                 )
         
@@ -65,11 +70,13 @@ class RiskCalculator:
         total_orders = len(order_entries)
         total_amount = sum(entry.amount for entry in order_entries)
         total_margin = sum(entry.margin for entry in order_entries)
+        total_profit_loss = sum(entry.profit_loss for entry in order_entries)
         
         return RiskAnalysis(
             total_orders=total_orders,
             total_amount=total_amount,
             total_margin=total_margin,
+            total_profit_loss=total_profit_loss,
             order_list=order_entries
         )
     

@@ -9,6 +9,7 @@ class OrderRange:
     end_price: int       # 終了価格（円）
     order_amount: int    # 値幅（円）
     quantity: float = 0.1  # 取引数量（デフォルト: 0.1）
+    current_price: int = 0  # 現在値（円）
 
 
 @dataclass
@@ -18,6 +19,7 @@ class OrderEntry:
     amount: int          # 発注金額（円）
     quantity: float      # 取引数量
     margin: float        # 必要証拠金（円）
+    profit_loss: float   # 損益（円）
 
 
 @dataclass
@@ -26,6 +28,7 @@ class RiskAnalysis:
     total_orders: int                # 総注文数
     total_amount: int               # 総発注金額（円）
     total_margin: float             # 総証拠金（円）
+    total_profit_loss: float        # 総損益（円）
     order_list: List[OrderEntry]    # 注文一覧
     
     @property

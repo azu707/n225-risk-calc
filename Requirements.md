@@ -20,18 +20,29 @@
    - デフォルト値: 0.1
    - 0.1以上の値を設定可能
 
-4. **証拠金計算**
+4. **現在値**
+   - 現在の市場価格（円）
+   - 損益計算に使用
+
+5. **証拠金計算**
    - 証拠金 = 注文価格 × 取引数量
    - 例: 40,000円での注文、取引数量0.1 → 証拠金 4,000円
+
+6. **損益計算**
+   - 損益 = (現在値 - 約定値) × 取引数量
+   - 約定値は注文価格と同じ
+   - 例: 約定値40,000円、現在値39,500円、数量0.1 → 損益 -50円
 
 ### 出力機能
 1. **注文一覧表**
    - 開始値から終了値まで、1発注ごとの金額刻みで注文を生成
-   - 各注文の詳細情報を一覧表で表示
+   - 各注文の詳細情報（価格、金額、数量、証拠金、損益）を一覧表で表示
+   - 全体の損益合計も表示
 
 2. **表示形式**
    - 金額の桁区切り表示（カンマ区切り）
    - 例: 40,000円、41,000円
+   - 損益は正負の符号付きで表示
 
 ### 計算ロジック
 1. **注文生成**
@@ -42,6 +53,7 @@
 2. **リスク計算**
    - 総発注金額 = 注文数 × 値幅
    - 総証拠金 = 各注文価格の合計 × 取引数量
+   - 総損益 = 各注文の損益の合計
    - 最大損失想定
    - レンジ外リスク分析
 
@@ -120,6 +132,7 @@ class OrderRange:
     end_price: int       # 終了価格
     order_amount: int    # 値幅
     quantity: float      # 取引数量
+    current_price: int   # 現在値
     
 @dataclass
 class OrderEntry:
@@ -127,12 +140,14 @@ class OrderEntry:
     amount: int          # 発注金額
     quantity: float      # 取引数量
     margin: float        # 必要証拠金
+    profit_loss: float   # 損益
     
 @dataclass
 class RiskAnalysis:
-    total_orders: int    # 総注文数
-    total_amount: int    # 総発注金額
-    total_margin: float  # 総証拠金
+    total_orders: int         # 総注文数
+    total_amount: int         # 総発注金額
+    total_margin: float       # 総証拠金
+    total_profit_loss: float  # 総損益
     order_list: List[OrderEntry]
 ```
 

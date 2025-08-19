@@ -6,17 +6,38 @@ class CurrencyFormatter:
     """通貨フォーマッティングユーティリティクラス"""
     
     @staticmethod
-    def format_yen(amount: int) -> str:
+    def format_yen(amount) -> str:
         """
-        整数値を日本円のカンマ区切り形式でフォーマット
+        数値を日本円のカンマ区切り形式でフォーマット
         
         Args:
-            amount: 金額（整数）
+            amount: 金額（整数または浮動小数点数）
             
         Returns:
             str: フォーマットされた金額文字列（例: "40,000円"）
         """
+        if isinstance(amount, float):
+            return f"{int(amount):,}円"
         return f"{amount:,}円"
+    
+    @staticmethod
+    def format_profit_loss(amount: float) -> str:
+        """
+        損益を符号付きでフォーマット
+        
+        Args:
+            amount: 損益金額（浮動小数点数）
+            
+        Returns:
+            str: フォーマットされた損益文字列（例: "+1,000円", "-500円"）
+        """
+        formatted_amount = f"{int(amount):,}円"
+        if amount > 0:
+            return f"+{formatted_amount}"
+        elif amount < 0:
+            return formatted_amount
+        else:
+            return "±0円"
     
     @staticmethod
     def format_number(number: int) -> str:
@@ -53,7 +74,8 @@ class ResultFormatter:
                 f"価格 {self.currency_formatter.format_yen(entry.price)}, "
                 f"金額 {self.currency_formatter.format_yen(entry.amount)}, "
                 f"数量 {entry.quantity}, "
-                f"証拠金 {self.currency_formatter.format_yen(int(entry.margin))}")
+                f"証拠金 {self.currency_formatter.format_yen(entry.margin)}, "
+                f"損益 {self.currency_formatter.format_profit_loss(entry.profit_loss)}")
     
     def format_summary(self, analysis: RiskAnalysis) -> str:
         """
@@ -69,7 +91,8 @@ class ResultFormatter:
             "=== リスク分析サマリー ===",
             f"総注文数: {self.currency_formatter.format_number(analysis.total_orders)}件",
             f"総発注金額: {self.currency_formatter.format_yen(analysis.total_amount)}",
-            f"総証拠金: {self.currency_formatter.format_yen(int(analysis.total_margin))}",
+            f"総証拠金: {self.currency_formatter.format_yen(analysis.total_margin)}",
+            f"総損益: {self.currency_formatter.format_profit_loss(analysis.total_profit_loss)}",
             f"平均注文価格: {self.currency_formatter.format_yen(int(analysis.average_price))}",
             f"価格レンジ: {self.currency_formatter.format_yen(analysis.price_range)}",
         ]
@@ -118,7 +141,7 @@ class ResultFormatter:
         Returns:
             List[str]: テーブルヘッダーのリスト
         """
-        return ["注文番号", "注文価格", "発注金額", "取引数量", "必要証拠金"]
+        return ["注文番号", "注文価格", "発注金額", "取引数量", "必要証拠金", "損益"]
     
     def format_table_row(self, entry: OrderEntry, index: int) -> List[str]:
         """
@@ -136,5 +159,6 @@ class ResultFormatter:
             self.currency_formatter.format_yen(entry.price),
             self.currency_formatter.format_yen(entry.amount),
             str(entry.quantity),
-            self.currency_formatter.format_yen(int(entry.margin))
+            self.currency_formatter.format_yen(entry.margin),
+            self.currency_formatter.format_profit_loss(entry.profit_loss)
         ]

@@ -88,17 +88,24 @@ class MainWindow(QMainWindow):
         self.quantity_edit.setFont(font)
         layout.addWidget(self.quantity_edit, 3, 1)
         
+        # 現在値入力
+        layout.addWidget(QLabel("現在値（円）:"), 4, 0)
+        self.current_price_edit = QLineEdit()
+        self.current_price_edit.setPlaceholderText("例: 39500")
+        self.current_price_edit.setFont(font)
+        layout.addWidget(self.current_price_edit, 4, 1)
+        
         # 計算ボタン
         self.calculate_button = QPushButton("計算実行")
         self.calculate_button.setFont(font)
         self.calculate_button.clicked.connect(self.calculate_risk)
-        layout.addWidget(self.calculate_button, 4, 0, 1, 2)
+        layout.addWidget(self.calculate_button, 5, 0, 1, 2)
         
         # クリアボタン
         self.clear_button = QPushButton("クリア")
         self.clear_button.setFont(font)
         self.clear_button.clicked.connect(self.clear_inputs)
-        layout.addWidget(self.clear_button, 5, 0, 1, 2)
+        layout.addWidget(self.clear_button, 6, 0, 1, 2)
         
         return group_box
     
@@ -142,6 +149,7 @@ class MainWindow(QMainWindow):
         self.order_table.setColumnWidth(2, 120)  # 発注金額
         self.order_table.setColumnWidth(3, 80)   # 取引数量
         self.order_table.setColumnWidth(4, 120)  # 必要証拠金
+        self.order_table.setColumnWidth(5, 120)  # 損益
         
     def calculate_risk(self):
         """リスク計算の実行"""
@@ -151,8 +159,9 @@ class MainWindow(QMainWindow):
             end_price_text = self.end_price_edit.text().strip()
             order_amount_text = self.order_amount_edit.text().strip()
             quantity_text = self.quantity_edit.text().strip()
+            current_price_text = self.current_price_edit.text().strip()
             
-            if not all([start_price_text, end_price_text, order_amount_text, quantity_text]):
+            if not all([start_price_text, end_price_text, order_amount_text, quantity_text, current_price_text]):
                 self.show_error("全ての項目を入力してください。")
                 return
             
@@ -177,9 +186,14 @@ class MainWindow(QMainWindow):
                 self.show_error(f"取引数量の入力エラー: {error}")
                 return
             
+            success, current_price, error = self.validator.parse_price_input(current_price_text)
+            if not success:
+                self.show_error(f"現在値の入力エラー: {error}")
+                return
+            
             # 入力値のバリデーション
             is_valid, error_msg = self.validator.validate_all_inputs(
-                start_price, end_price, order_amount, quantity
+                start_price, end_price, order_amount, quantity, current_price
             )
             if not is_valid:
                 self.show_error(error_msg)
@@ -190,7 +204,8 @@ class MainWindow(QMainWindow):
                 start_price=start_price,
                 end_price=end_price,
                 order_amount=order_amount,
-                quantity=quantity
+                quantity=quantity,
+                current_price=current_price
             )
             
             analysis = self.calculator.calculate_orders(order_range)
@@ -229,6 +244,7 @@ class MainWindow(QMainWindow):
         self.end_price_edit.clear()
         self.order_amount_edit.clear()
         self.quantity_edit.setText("0.1")  # デフォルト値にリセット
+        self.current_price_edit.clear()
         self.summary_text.clear()
         self.order_table.setRowCount(0)
     

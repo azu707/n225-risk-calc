@@ -88,7 +88,7 @@ class InputValidator:
         return True, None
     
     @staticmethod
-    def validate_all_inputs(start_price: int, end_price: int, order_amount: int, quantity: float = 0.1) -> Tuple[bool, Optional[str]]:
+    def validate_all_inputs(start_price: int, end_price: int, order_amount: int, quantity: float = 0.1, current_price: int = 0) -> Tuple[bool, Optional[str]]:
         """
         全ての入力値を一括でバリデーション
         
@@ -97,6 +97,7 @@ class InputValidator:
             end_price: 終了価格
             order_amount: 値幅
             quantity: 取引数量
+            current_price: 現在値
             
         Returns:
             Tuple[bool, Optional[str]]: (有効性, エラーメッセージ)
@@ -115,6 +116,13 @@ class InputValidator:
         is_valid, error_msg = InputValidator.validate_quantity(quantity)
         if not is_valid:
             return is_valid, error_msg
+        
+        # 現在値のバリデーション
+        if current_price <= 0:
+            return False, "現在値は正の値である必要があります"
+        
+        if current_price < InputValidator.MIN_PRICE or current_price > InputValidator.MAX_PRICE:
+            return False, f"現在値は{InputValidator.MIN_PRICE:,}円〜{InputValidator.MAX_PRICE:,}円の範囲で入力してください"
         
         # 追加のロジックチェック
         price_range = end_price - start_price
