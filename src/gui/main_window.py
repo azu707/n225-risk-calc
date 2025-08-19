@@ -73,8 +73,8 @@ class MainWindow(QMainWindow):
         self.end_price_edit.setFont(font)
         layout.addWidget(self.end_price_edit, 1, 1)
         
-        # 1発注ごとの金額入力
-        layout.addWidget(QLabel("1発注ごとの金額（円）:"), 2, 0)
+        # 値幅入力
+        layout.addWidget(QLabel("値幅（円）:"), 2, 0)
         self.order_amount_edit = QLineEdit()
         self.order_amount_edit.setPlaceholderText("例: 100")
         self.order_amount_edit.setFont(font)
@@ -159,7 +159,7 @@ class MainWindow(QMainWindow):
             
             success, order_amount, error = self.validator.parse_price_input(order_amount_text)
             if not success:
-                self.show_error(f"注文金額の入力エラー: {error}")
+                self.show_error(f"値幅の入力エラー: {error}")
                 return
             
             # 入力値のバリデーション

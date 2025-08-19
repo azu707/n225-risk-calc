@@ -46,19 +46,19 @@ class InputValidator:
     @staticmethod
     def validate_order_amount(order_amount: int) -> Tuple[bool, Optional[str]]:
         """
-        注文金額のバリデーション
+        値幅のバリデーション
         
         Args:
-            order_amount: 1発注ごとの金額
+            order_amount: 値幅
             
         Returns:
             Tuple[bool, Optional[str]]: (有効性, エラーメッセージ)
         """
         if order_amount < InputValidator.MIN_ORDER_AMOUNT:
-            return False, f"注文金額は{InputValidator.MIN_ORDER_AMOUNT:,}円以上である必要があります"
+            return False, f"値幅は{InputValidator.MIN_ORDER_AMOUNT:,}円以上である必要があります"
         
         if order_amount > InputValidator.MAX_ORDER_AMOUNT:
-            return False, f"注文金額は{InputValidator.MAX_ORDER_AMOUNT:,}円以下である必要があります"
+            return False, f"値幅は{InputValidator.MAX_ORDER_AMOUNT:,}円以下である必要があります"
         
         return True, None
     
@@ -70,7 +70,7 @@ class InputValidator:
         Args:
             start_price: 開始価格
             end_price: 終了価格
-            order_amount: 1発注ごとの金額
+            order_amount: 値幅
             
         Returns:
             Tuple[bool, Optional[str]]: (有効性, エラーメッセージ)
@@ -88,12 +88,12 @@ class InputValidator:
         # 追加のロジックチェック
         price_range = end_price - start_price
         if order_amount > price_range:
-            return False, "注文金額が価格レンジより大きい場合、1つの注文のみが生成されます"
+            return False, "値幅が価格レンジより大きい場合、1つの注文のみが生成されます"
         
         # 注文数の妥当性チェック
         estimated_orders = (price_range + order_amount - 1) // order_amount
         if estimated_orders > 1000:
-            return False, "注文数が多すぎます。注文金額を大きくするか、価格レンジを小さくしてください"
+            return False, "注文数が多すぎます。値幅を大きくするか、価格レンジを小さくしてください"
         
         return True, None
     

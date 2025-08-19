@@ -22,12 +22,12 @@ class RiskCalculator:
             raise ValueError("開始価格は終了価格より小さい必要があります")
         
         if order_range.order_amount <= 0:
-            raise ValueError("1発注ごとの金額は正の値である必要があります")
+            raise ValueError("値幅は正の値である必要があります")
         
         # 価格レンジを計算
         price_range = order_range.end_price - order_range.start_price
         
-        # 1発注ごとの金額が価格レンジより大きい場合、1つの注文のみ
+        # 値幅が価格レンジより大きい場合、1つの注文のみ
         if order_range.order_amount > price_range:
             order_entries = [
                 OrderEntry(

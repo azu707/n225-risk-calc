@@ -7,7 +7,7 @@ class OrderRange:
     """仕掛けレンジの設定を表すデータクラス"""
     start_price: int     # 開始価格（円）
     end_price: int       # 終了価格（円）
-    order_amount: int    # 1発注ごとの金額（円）
+    order_amount: int    # 値幅（円）
 
 
 @dataclass
