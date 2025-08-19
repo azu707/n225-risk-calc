@@ -26,7 +26,7 @@ class MainWindow(QMainWindow):
     def init_ui(self):
         """UIの初期化"""
         self.setWindowTitle("日経225 CFD リスク計算アプリ")
-        self.setGeometry(100, 100, 1000, 700)
+        self.setGeometry(100, 100, 1200, 900)
         
         # 中央ウィジェット
         central_widget = QWidget()
@@ -47,8 +47,8 @@ class MainWindow(QMainWindow):
         result_widget = self.create_result_section()
         splitter.addWidget(result_widget)
         
-        # スプリッターの初期サイズ設定
-        splitter.setSizes([250, 450])
+        # スプリッターの初期サイズ設定（入力部分を小さく、結果表示部分を大きく）
+        splitter.setSizes([250, 650])
         
     def create_input_section(self) -> QWidget:
         """入力セクションの作成"""
@@ -119,7 +119,7 @@ class MainWindow(QMainWindow):
         summary_layout = QVBoxLayout(summary_group)
         
         self.summary_text = QTextEdit()
-        self.summary_text.setMaximumHeight(150)
+        self.summary_text.setMaximumHeight(120)
         self.summary_text.setReadOnly(True)
         summary_layout.addWidget(self.summary_text)
         
@@ -131,6 +131,8 @@ class MainWindow(QMainWindow):
         
         self.order_table = QTableWidget()
         self.setup_table()
+        # テーブルの最小高さを設定してより多くの行を表示
+        self.order_table.setMinimumHeight(500)
         table_layout.addWidget(self.order_table)
         
         layout.addWidget(table_group)
@@ -144,12 +146,16 @@ class MainWindow(QMainWindow):
         self.order_table.setHorizontalHeaderLabels(headers)
         
         # テーブルの列幅を調整
-        self.order_table.setColumnWidth(0, 80)   # 注文番号
-        self.order_table.setColumnWidth(1, 120)  # 注文価格
-        self.order_table.setColumnWidth(2, 120)  # 発注金額
+        self.order_table.setColumnWidth(0, 70)   # 注文番号
+        self.order_table.setColumnWidth(1, 110)  # 注文価格
+        self.order_table.setColumnWidth(2, 110)  # 発注金額
         self.order_table.setColumnWidth(3, 80)   # 取引数量
         self.order_table.setColumnWidth(4, 120)  # 必要証拠金
         self.order_table.setColumnWidth(5, 120)  # 損益
+        
+        # テーブルのスタイル設定
+        self.order_table.setAlternatingRowColors(True)  # 行の背景色を交互に変更
+        self.order_table.setSelectionBehavior(QTableWidget.SelectRows)  # 行単位で選択
         
     def calculate_risk(self):
         """リスク計算の実行"""
