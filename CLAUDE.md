@@ -7,6 +7,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Development Setup
 - Python 3.11を使用（.python-versionで指定）
+- uvを使用
 - 仮想環境は.venvディレクトリに設定済み
 
 ## Commands
