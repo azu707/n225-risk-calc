@@ -30,6 +30,12 @@ class RiskCalculator:
         if order_range.current_price <= 0:
             raise ValueError("現在値は正の値である必要があります")
         
+        if order_range.loss_cut_rate <= 0:
+            raise ValueError("ロスカットレートは正の値である必要があります")
+        
+        if order_range.loss_cut_width <= 0:
+            raise ValueError("ロスカット幅は正の値である必要があります")
+        
         # 価格レンジを計算
         price_range = order_range.end_price - order_range.start_price
         
@@ -40,7 +46,8 @@ class RiskCalculator:
                     price=order_range.start_price,
                     amount=order_range.order_amount,
                     quantity=order_range.quantity,
-                    margin=order_range.start_price * order_range.quantity,  # 証拠金は注文価格×取引数量
+                    required_margin=order_range.start_price * order_range.quantity,  # 必要証拠金
+                    optional_margin=(order_range.start_price - order_range.loss_cut_width - order_range.loss_cut_rate) * order_range.quantity,  # 任意証拠金
                     profit_loss=(order_range.current_price - order_range.start_price) * order_range.quantity  # 損益計算
                 )
             ]
@@ -61,7 +68,8 @@ class RiskCalculator:
                         price=order_price,
                         amount=order_range.order_amount,
                         quantity=order_range.quantity,
-                        margin=order_price * order_range.quantity,  # 証拠金は注文価格×取引数量
+                        required_margin=order_price * order_range.quantity,  # 必要証拠金
+                        optional_margin=(order_price - order_range.loss_cut_width - order_range.loss_cut_rate) * order_range.quantity,  # 任意証拠金
                         profit_loss=(order_range.current_price - order_price) * order_range.quantity  # 損益計算
                     )
                 )
@@ -69,12 +77,16 @@ class RiskCalculator:
         # 合計値を計算
         total_orders = len(order_entries)
         total_amount = sum(entry.amount for entry in order_entries)
-        total_margin = sum(entry.margin for entry in order_entries)
+        total_required_margin = sum(entry.required_margin for entry in order_entries)
+        total_optional_margin = sum(entry.optional_margin for entry in order_entries)
+        total_margin = total_required_margin + total_optional_margin
         total_profit_loss = sum(entry.profit_loss for entry in order_entries)
         
         return RiskAnalysis(
             total_orders=total_orders,
             total_amount=total_amount,
+            total_required_margin=total_required_margin,
+            total_optional_margin=total_optional_margin,
             total_margin=total_margin,
             total_profit_loss=total_profit_loss,
             order_list=order_entries

@@ -24,11 +24,22 @@
    - 現在の市場価格（円）
    - 損益計算に使用
 
-5. **証拠金計算**
-   - 証拠金 = 注文価格 × 取引数量
-   - 例: 40,000円での注文、取引数量0.1 → 証拠金 4,000円
+5. **ロスカットレート**
+   - ロスカット（強制決済）が発生する価格水準（円）
 
-6. **損益計算**
+6. **ロスカット幅**
+   - ロスカット計算に使用する価格幅（円）
+   - デフォルト値: 1980円
+
+7. **証拠金計算**
+   - 必要証拠金 = 注文価格 × 取引数量
+   - 例: 40,000円での注文、取引数量0.1 → 必要証拠金 4,000円
+
+8. **任意証拠金計算**
+   - 任意証拠金 = (注文価格 - ロスカット幅 - ロスカットレート) × 取引数量
+   - 例: 注文価格40,000円、ロスカット幅1,980円、ロスカットレート37,000円、数量0.1 → 任意証拠金 102円
+
+9. **損益計算**
    - 損益 = (現在値 - 約定値) × 取引数量
    - 約定値は注文価格と同じ
    - 例: 約定値40,000円、現在値39,500円、数量0.1 → 損益 -50円
@@ -36,7 +47,7 @@
 ### 出力機能
 1. **注文一覧表**
    - 開始値から終了値まで、1発注ごとの金額刻みで注文を生成
-   - 各注文の詳細情報（価格、金額、数量、証拠金、損益）を一覧表で表示
+   - 各注文の詳細情報（価格、金額、数量、必要証拠金、任意証拠金、損益）を一覧表で表示
    - 全体の損益合計も表示
 
 2. **表示形式**
@@ -52,7 +63,9 @@
 
 2. **リスク計算**
    - 総発注金額 = 注文数 × 値幅
-   - 総証拠金 = 各注文価格の合計 × 取引数量
+   - 総必要証拠金 = 各注文の必要証拠金の合計
+   - 総任意証拠金 = 各注文の任意証拠金の合計
+   - 総証拠金 = 総必要証拠金 + 総任意証拠金
    - 総損益 = 各注文の損益の合計
    - 最大損失想定
    - レンジ外リスク分析
@@ -133,21 +146,26 @@ class OrderRange:
     order_amount: int    # 値幅
     quantity: float      # 取引数量
     current_price: int   # 現在値
+    loss_cut_rate: int   # ロスカットレート
+    loss_cut_width: int = 1980  # ロスカット幅（デフォルト: 1980）
     
 @dataclass
 class OrderEntry:
     price: int           # 注文価格
     amount: int          # 発注金額
     quantity: float      # 取引数量
-    margin: float        # 必要証拠金
+    required_margin: float    # 必要証拠金
+    optional_margin: float    # 任意証拠金
     profit_loss: float   # 損益
     
 @dataclass
 class RiskAnalysis:
-    total_orders: int         # 総注文数
-    total_amount: int         # 総発注金額
-    total_margin: float       # 総証拠金
-    total_profit_loss: float  # 総損益
+    total_orders: int              # 総注文数
+    total_amount: int              # 総発注金額
+    total_required_margin: float   # 総必要証拠金
+    total_optional_margin: float   # 総任意証拠金
+    total_margin: float            # 総証拠金（必要＋任意）
+    total_profit_loss: float       # 総損益
     order_list: List[OrderEntry]
 ```
 

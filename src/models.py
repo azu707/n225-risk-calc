@@ -10,16 +10,19 @@ class OrderRange:
     order_amount: int    # 値幅（円）
     quantity: float = 0.1  # 取引数量（デフォルト: 0.1）
     current_price: int = 0  # 現在値（円）
+    loss_cut_rate: int = 0  # ロスカットレート（円）
+    loss_cut_width: int = 1980  # ロスカット幅（円、デフォルト: 1980）
 
 
 @dataclass
 class OrderEntry:
     """個別注文エントリーを表すデータクラス"""
-    price: int           # 注文価格（円）
-    amount: int          # 発注金額（円）
-    quantity: float      # 取引数量
-    margin: float        # 必要証拠金（円）
-    profit_loss: float   # 損益（円）
+    price: int               # 注文価格（円）
+    amount: int              # 発注金額（円）
+    quantity: float          # 取引数量
+    required_margin: float   # 必要証拠金（円）
+    optional_margin: float   # 任意証拠金（円）
+    profit_loss: float       # 損益（円）
 
 
 @dataclass
@@ -27,7 +30,9 @@ class RiskAnalysis:
     """リスク分析結果を表すデータクラス"""
     total_orders: int                # 総注文数
     total_amount: int               # 総発注金額（円）
-    total_margin: float             # 総証拠金（円）
+    total_required_margin: float    # 総必要証拠金（円）
+    total_optional_margin: float    # 総任意証拠金（円）
+    total_margin: float             # 総証拠金（必要＋任意）（円）
     total_profit_loss: float        # 総損益（円）
     order_list: List[OrderEntry]    # 注文一覧
     
