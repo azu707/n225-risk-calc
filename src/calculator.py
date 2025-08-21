@@ -5,6 +5,9 @@ from .models import OrderRange, OrderEntry, RiskAnalysis
 class RiskCalculator:
     """日経225 CFDリスク計算エンジン"""
     
+    # 日経225 CFDのレバレッジ倍率
+    LEVERAGE = 10
+    
     def calculate_orders(self, order_range: OrderRange) -> RiskAnalysis:
         """
         指定されたレンジに基づいて注文を計算し、リスク分析を実行
@@ -47,8 +50,8 @@ class RiskCalculator:
                     amount=order_range.order_amount,
                     quantity=order_range.quantity,
                     required_margin=order_range.start_price * order_range.quantity,  # 必要証拠金
-                    optional_margin=(order_range.start_price - order_range.loss_cut_width - order_range.loss_cut_rate) * order_range.quantity,  # 任意証拠金
-                    profit_loss=(order_range.current_price - order_range.start_price) * order_range.quantity  # 損益計算
+                    optional_margin=max(0, (order_range.start_price - order_range.loss_cut_width - order_range.loss_cut_rate) * order_range.quantity * self.LEVERAGE),  # 任意証拠金
+                    profit_loss=(order_range.current_price - order_range.start_price) * order_range.quantity * self.LEVERAGE  # 損益計算（レバレッジ適用）
                 )
             ]
         else:
@@ -69,8 +72,8 @@ class RiskCalculator:
                         amount=order_range.order_amount,
                         quantity=order_range.quantity,
                         required_margin=order_price * order_range.quantity,  # 必要証拠金
-                        optional_margin=(order_price - order_range.loss_cut_width - order_range.loss_cut_rate) * order_range.quantity,  # 任意証拠金
-                        profit_loss=(order_range.current_price - order_price) * order_range.quantity  # 損益計算
+                        optional_margin=max(0, (order_price - order_range.loss_cut_width - order_range.loss_cut_rate) * order_range.quantity * self.LEVERAGE),  # 任意証拠金
+                        profit_loss=(order_range.current_price - order_price) * order_range.quantity * self.LEVERAGE  # 損益計算（レバレッジ適用）
                     )
                 )
         
