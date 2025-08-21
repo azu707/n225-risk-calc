@@ -35,20 +35,24 @@ class MainWindow(QMainWindow):
         # メインレイアウト
         main_layout = QVBoxLayout(central_widget)
         
-        # スプリッター（上下分割）
-        splitter = QSplitter(Qt.Vertical)
-        main_layout.addWidget(splitter)
+        # 上部：水平スプリッター（左右分割）
+        top_splitter = QSplitter(Qt.Horizontal)
+        main_layout.addWidget(top_splitter)
         
-        # 入力部分
+        # 左側：パラメータ設定
         input_widget = self.create_input_section()
-        splitter.addWidget(input_widget)
+        top_splitter.addWidget(input_widget)
         
-        # 結果表示部分
-        result_widget = self.create_result_section()
-        splitter.addWidget(result_widget)
+        # 右側：リスク分析サマリー
+        summary_widget = self.create_summary_section()
+        top_splitter.addWidget(summary_widget)
         
-        # スプリッターの初期サイズ設定（入力部分を小さく、結果表示部分を大きく）
-        splitter.setSizes([250, 650])
+        # 水平スプリッターの初期サイズ設定（パラメータ設定を狭く、サマリーを広く）
+        top_splitter.setSizes([400, 600])
+        
+        # 下部：注文一覧テーブル
+        table_widget = self.create_table_section()
+        main_layout.addWidget(table_widget)
         
     def create_input_section(self) -> QWidget:
         """入力セクションの作成"""
@@ -124,35 +128,29 @@ class MainWindow(QMainWindow):
         
         return group_box
     
-    def create_result_section(self) -> QWidget:
-        """結果表示セクションの作成"""
-        widget = QWidget()
-        layout = QVBoxLayout(widget)
-        
-        # サマリー表示
+    def create_summary_section(self) -> QWidget:
+        """サマリー表示セクションの作成"""
         summary_group = QGroupBox("リスク分析サマリー")
         summary_layout = QVBoxLayout(summary_group)
         
         self.summary_text = QTextEdit()
-        self.summary_text.setMaximumHeight(120)
         self.summary_text.setReadOnly(True)
         summary_layout.addWidget(self.summary_text)
         
-        layout.addWidget(summary_group)
-        
-        # 注文一覧テーブル
+        return summary_group
+    
+    def create_table_section(self) -> QWidget:
+        """テーブル表示セクションの作成"""
         table_group = QGroupBox("注文一覧")
         table_layout = QVBoxLayout(table_group)
         
         self.order_table = QTableWidget()
         self.setup_table()
         # テーブルの最小高さを設定してより多くの行を表示
-        self.order_table.setMinimumHeight(500)
+        self.order_table.setMinimumHeight(400)
         table_layout.addWidget(self.order_table)
         
-        layout.addWidget(table_group)
-        
-        return widget
+        return table_group
     
     def setup_table(self):
         """テーブルの設定"""
