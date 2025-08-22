@@ -29,7 +29,7 @@
 
 6. **ロスカット幅**
    - ロスカット計算に使用する価格幅（円）
-   - デフォルト値: 1980円
+   - デフォルト値: 2139円
 
 7. **証拠金計算**
    - 必要証拠金 = 注文価格 × 取引数量
@@ -147,7 +147,7 @@ class OrderRange:
     quantity: float      # 取引数量
     current_price: int   # 現在値
     loss_cut_rate: int   # ロスカットレート
-    loss_cut_width: int = 1980  # ロスカット幅（デフォルト: 1980）
+    loss_cut_width: int = 2139  # ロスカット幅（デフォルト: 2139）
     
 @dataclass
 class OrderEntry:

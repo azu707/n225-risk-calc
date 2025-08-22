@@ -1,6 +1,8 @@
 from dataclasses import dataclass
 from typing import List
 
+from .constants import DEFAULT_LOSS_CUT_WIDTH, DEFAULT_QUANTITY
+
 
 @dataclass
 class OrderRange:
@@ -8,10 +10,10 @@ class OrderRange:
     start_price: int     # 開始価格（円）
     end_price: int       # 終了価格（円）
     order_amount: int    # 値幅（円）
-    quantity: float = 0.1  # 取引数量（デフォルト: 0.1）
+    quantity: float = DEFAULT_QUANTITY  # 取引数量（デフォルト: 0.1）
     current_price: int = 0  # 現在値（円）
     loss_cut_rate: int = 0  # ロスカットレート（円）
-    loss_cut_width: int = 1980  # ロスカット幅（円、デフォルト: 1980）
+    loss_cut_width: int = DEFAULT_LOSS_CUT_WIDTH  # ロスカット幅（円、デフォルト: 2139）
 
 
 @dataclass

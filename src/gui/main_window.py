@@ -11,6 +11,7 @@ from ..models import OrderRange
 from ..calculator import RiskCalculator
 from ..validator import InputValidator
 from ..formatter import ResultFormatter
+from ..constants import DEFAULT_LOSS_CUT_WIDTH, DEFAULT_QUANTITY
 
 
 class MainWindow(QMainWindow):
@@ -88,7 +89,7 @@ class MainWindow(QMainWindow):
         layout.addWidget(QLabel("取引数量:"), 3, 0)
         self.quantity_edit = QLineEdit()
         self.quantity_edit.setPlaceholderText("例: 0.1")
-        self.quantity_edit.setText("0.1")  # デフォルト値
+        self.quantity_edit.setText(str(DEFAULT_QUANTITY))  # デフォルト値
         self.quantity_edit.setFont(font)
         layout.addWidget(self.quantity_edit, 3, 1)
         
@@ -109,8 +110,8 @@ class MainWindow(QMainWindow):
         # ロスカット幅入力
         layout.addWidget(QLabel("ロスカット幅（円）:"), 6, 0)
         self.loss_cut_width_edit = QLineEdit()
-        self.loss_cut_width_edit.setPlaceholderText("例: 1980")
-        self.loss_cut_width_edit.setText("1980")  # デフォルト値
+        self.loss_cut_width_edit.setPlaceholderText(f"例: {DEFAULT_LOSS_CUT_WIDTH}")
+        self.loss_cut_width_edit.setText(str(DEFAULT_LOSS_CUT_WIDTH))  # デフォルト値
         self.loss_cut_width_edit.setFont(font)
         layout.addWidget(self.loss_cut_width_edit, 6, 1)
         
@@ -277,10 +278,10 @@ class MainWindow(QMainWindow):
         self.start_price_edit.clear()
         self.end_price_edit.clear()
         self.order_amount_edit.clear()
-        self.quantity_edit.setText("0.1")  # デフォルト値にリセット
+        self.quantity_edit.setText(str(DEFAULT_QUANTITY))  # デフォルト値にリセット
         self.current_price_edit.clear()
         self.loss_cut_rate_edit.clear()
-        self.loss_cut_width_edit.setText("1980")  # デフォルト値にリセット
+        self.loss_cut_width_edit.setText(str(DEFAULT_LOSS_CUT_WIDTH))  # デフォルト値にリセット
         self.summary_text.clear()
         self.order_table.setRowCount(0)
     

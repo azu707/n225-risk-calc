@@ -1,5 +1,7 @@
 from typing import Optional, Tuple
 
+from .constants import DEFAULT_LOSS_CUT_WIDTH, DEFAULT_QUANTITY
+
 
 class InputValidator:
     """入力値のバリデーションを行うクラス"""
@@ -88,7 +90,7 @@ class InputValidator:
         return True, None
     
     @staticmethod
-    def validate_all_inputs(start_price: int, end_price: int, order_amount: int, quantity: float = 0.1, current_price: int = 0, loss_cut_rate: int = 0, loss_cut_width: int = 1980) -> Tuple[bool, Optional[str]]:
+    def validate_all_inputs(start_price: int, end_price: int, order_amount: int, quantity: float = DEFAULT_QUANTITY, current_price: int = 0, loss_cut_rate: int = 0, loss_cut_width: int = DEFAULT_LOSS_CUT_WIDTH) -> Tuple[bool, Optional[str]]:
         """
         全ての入力値を一括でバリデーション
         
