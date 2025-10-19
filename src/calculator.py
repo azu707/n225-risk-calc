@@ -159,8 +159,8 @@ class RiskCalculator:
             profit_loss = (current_price - order_price) * quantity * self.LEVERAGE
         else:
             # 売りポジションの場合
-            # 任意証拠金 = (ロスカットレート + ロスカット幅 - 注文価格) * 数量 * レバレッジ
-            optional_margin = max(0, (loss_cut_rate + loss_cut_width - order_price) * quantity * self.LEVERAGE)
+            # 任意証拠金 = (ロスカットレート - (注文価格 + ロスカット幅)) * 数量 * レバレッジ
+            optional_margin = max(0, (loss_cut_rate - (order_price + loss_cut_width)) * quantity * self.LEVERAGE)
             # 損益 = (注文価格 - 現在値) * 数量 * レバレッジ
             profit_loss = (order_price - current_price) * quantity * self.LEVERAGE
 
