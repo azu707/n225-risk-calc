@@ -114,18 +114,24 @@ class MainWindow(QMainWindow):
         self.loss_cut_width_edit.setText(str(DEFAULT_LOSS_CUT_WIDTH))  # デフォルト値
         self.loss_cut_width_edit.setFont(font)
         layout.addWidget(self.loss_cut_width_edit, 6, 1)
-        
+
+        # ロスカット幅の説明
+        loss_cut_width_note = QLabel("※目安: 現在値/20")
+        loss_cut_width_note.setFont(font)
+        loss_cut_width_note.setStyleSheet("color: gray; font-size: 9pt;")
+        layout.addWidget(loss_cut_width_note, 7, 0, 1, 2)
+
         # 計算ボタン
         self.calculate_button = QPushButton("計算実行")
         self.calculate_button.setFont(font)
         self.calculate_button.clicked.connect(self.calculate_risk)
-        layout.addWidget(self.calculate_button, 7, 0, 1, 2)
-        
+        layout.addWidget(self.calculate_button, 8, 0, 1, 2)
+
         # クリアボタン
         self.clear_button = QPushButton("クリア")
         self.clear_button.setFont(font)
         self.clear_button.clicked.connect(self.clear_inputs)
-        layout.addWidget(self.clear_button, 8, 0, 1, 2)
+        layout.addWidget(self.clear_button, 9, 0, 1, 2)
         
         return group_box
     
