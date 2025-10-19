@@ -1,7 +1,7 @@
 from dataclasses import dataclass
-from typing import List
+from typing import List, Optional
 
-from .constants import DEFAULT_LOSS_CUT_WIDTH, DEFAULT_QUANTITY
+from .constants import DEFAULT_LOSS_CUT_WIDTH, DEFAULT_QUANTITY, ORDER_TYPE_BUY
 
 
 @dataclass
@@ -14,6 +14,7 @@ class OrderRange:
     current_price: int = 0  # 現在値（円）
     loss_cut_rate: int = 0  # ロスカットレート（円）
     loss_cut_width: int = DEFAULT_LOSS_CUT_WIDTH  # ロスカット幅（円、デフォルト: 2139）
+    order_type: Optional[str] = None  # 取引方向（BUY/SELL、Noneの場合は自動判定）
 
 
 @dataclass
@@ -37,6 +38,7 @@ class RiskAnalysis:
     total_margin: float             # 総証拠金（必要＋任意）（円）
     total_profit_loss: float        # 総損益（円）
     order_list: List[OrderEntry]    # 注文一覧
+    order_type: Optional[str] = None  # 取引方向（BUY/SELL）
     
     @property
     def average_price(self) -> float:

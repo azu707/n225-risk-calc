@@ -1,5 +1,6 @@
 from typing import List
 from .models import RiskAnalysis, OrderEntry
+from .constants import ORDER_TYPE_BUY, ORDER_TYPE_SELL
 
 
 class CurrencyFormatter:
@@ -80,15 +81,29 @@ class ResultFormatter:
     def format_summary(self, analysis: RiskAnalysis) -> str:
         """
         リスク分析結果のサマリーをフォーマット
-        
+
         Args:
             analysis: リスク分析結果
-            
+
         Returns:
             str: フォーマットされたサマリー情報
         """
+        # 取引方向の表示文字列を作成
+        order_type_str = ""
+        if analysis.order_type == ORDER_TYPE_BUY:
+            order_type_str = "買い上がり"
+        elif analysis.order_type == ORDER_TYPE_SELL:
+            order_type_str = "売り下がり"
+
         summary_lines = [
             "=== リスク分析サマリー ===",
+        ]
+
+        # 取引方向が設定されている場合は表示
+        if order_type_str:
+            summary_lines.append(f"取引方向: {order_type_str}")
+
+        summary_lines.extend([
             f"総注文数: {self.currency_formatter.format_number(analysis.total_orders)}件",
             f"総発注金額: {self.currency_formatter.format_yen(analysis.total_amount)}",
             f"総必要証拠金: {self.currency_formatter.format_yen(analysis.total_required_margin)}",
@@ -97,7 +112,7 @@ class ResultFormatter:
             f"総損益: {self.currency_formatter.format_profit_loss(analysis.total_profit_loss)}",
             f"平均注文価格: {self.currency_formatter.format_yen(int(analysis.average_price))}",
             f"価格レンジ: {self.currency_formatter.format_yen(analysis.price_range)}",
-        ]
+        ])
         return "\n".join(summary_lines)
     
     def format_order_list(self, order_list: List[OrderEntry]) -> str:

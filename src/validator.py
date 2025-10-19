@@ -18,33 +18,39 @@ class InputValidator:
     def validate_price_range(start_price: int, end_price: int) -> Tuple[bool, Optional[str]]:
         """
         価格レンジのバリデーション
-        
+
         Args:
             start_price: 開始価格
             end_price: 終了価格
-            
+
         Returns:
             Tuple[bool, Optional[str]]: (有効性, エラーメッセージ)
         """
         # 価格の範囲チェック
         if start_price < InputValidator.MIN_PRICE:
             return False, f"開始価格は{InputValidator.MIN_PRICE:,}円以上である必要があります"
-        
+
+        if start_price > InputValidator.MAX_PRICE:
+            return False, f"開始価格は{InputValidator.MAX_PRICE:,}円以下である必要があります"
+
+        if end_price < InputValidator.MIN_PRICE:
+            return False, f"終了価格は{InputValidator.MIN_PRICE:,}円以上である必要があります"
+
         if end_price > InputValidator.MAX_PRICE:
             return False, f"終了価格は{InputValidator.MAX_PRICE:,}円以下である必要があります"
-        
-        # 開始価格 < 終了価格のチェック
-        if start_price >= end_price:
-            return False, "開始価格は終了価格より小さい必要があります"
-        
-        # 価格差の妥当性チェック
-        price_diff = end_price - start_price
+
+        # 開始価格と終了価格が同じ場合はエラー
+        if start_price == end_price:
+            return False, "開始価格と終了価格は異なる値である必要があります"
+
+        # 価格差の妥当性チェック（買い上がり・売り下がり両方に対応）
+        price_diff = abs(end_price - start_price)
         if price_diff < 100:
             return False, "価格レンジは最低100円以上である必要があります"
-        
+
         if price_diff > 20000:
             return False, "価格レンジは20,000円以下にしてください"
-        
+
         return True, None
     
     @staticmethod
@@ -143,15 +149,15 @@ class InputValidator:
             return False, "ロスカット幅は10,000円以下である必要があります"
         
         # 追加のロジックチェック
-        price_range = end_price - start_price
+        price_range = abs(end_price - start_price)
         if order_amount > price_range:
             return False, "値幅が価格レンジより大きい場合、1つの注文のみが生成されます"
-        
+
         # 注文数の妥当性チェック
         estimated_orders = (price_range + order_amount - 1) // order_amount
         if estimated_orders > 1000:
             return False, "注文数が多すぎます。値幅を大きくするか、価格レンジを小さくしてください"
-        
+
         return True, None
     
     @staticmethod
