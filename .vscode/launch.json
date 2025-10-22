@@ -1,0 +1,29 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "日経225 CFD リスク計算アプリ",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/main.py",
+            "console": "integratedTerminal",
+            "justMyCode": true
+        },
+        {
+            "name": "Python: 現在のファイル",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${file}",
+            "console": "integratedTerminal",
+            "justMyCode": true
+        },
+        {
+            "name": "Python: テストファイル",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/test_order_types.py",
+            "console": "integratedTerminal",
+            "justMyCode": false
+        }
+    ]
+}
